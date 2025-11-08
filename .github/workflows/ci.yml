@@ -12,3 +12,10 @@ jobs:
         run: npm ci
       - name: Run build
         run: npm run build
+      - name: Debug info
+        run: |
+          echo "当前目录: $(pwd)"
+          echo "Node版本: $(node --version)"
+          echo "NPM版本: $(npm --version)"
+          ls -la
+          ls -la dist/
