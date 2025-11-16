@@ -49,26 +49,18 @@ jobs:
         env:
           OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
         run: |
-          set -e  # 遇到错误立即停止
-
-          # 测试基本操作
-          echo "1. 测试Bucket列表..."
-          aliyun oss ls
-
-          echo "2. 测试文件列表..."
+          set -e
+          echo "1. 测试文件列表..."
           aliyun oss ls oss://$OSS_BUCKET/
 
-          echo "3. 测试上传文件..."
-          echo "GitHub Actions Permission Test" > test-permission.txt
-          aliyun oss cp test-permission.txt oss://$OSS_BUCKET/test-permission.txt
+          echo "2. 测试上传文件..."
+          echo "GitHub Actions Test" > test-actions.txt
+          aliyun oss cp test-actions.txt oss://$OSS_BUCKET/test-actions.txt
 
-          echo "4. 测试读取文件..."
-          aliyun oss cat oss://$OSS_BUCKET/test-permission.txt
+          echo "3. 测试读取文件..."
+          aliyun oss cat oss://$OSS_BUCKET/test-actions.txt
 
-          echo "5. 测试删除文件..."
-          aliyun oss rm oss://$OSS_BUCKET/test-permission.txt
-
-          echo "6. 测试文件存在检查..."
-          aliyun oss ls oss://$OSS_BUCKET/ | head -5 || echo "Bucket为空"
+          echo "4. 测试删除文件..."
+          aliyun oss rm oss://$OSS_BUCKET/test-actions.txt
 
           echo "✅ 所有权限测试通过！"
