@@ -65,6 +65,8 @@ jobs:
 
           echo "✅ 所有权限测试通过！"
       - name: Deploy with cleanup
+        env:
+          OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
         run: |
           echo "🧹 清理旧的构建资源..."
           # 删除旧的 JS/CSS 文件（保留当前构建）
