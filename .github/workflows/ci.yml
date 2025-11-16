@@ -22,22 +22,38 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Install OSSUTIL
+      - name: Install OSSUTIL v2
         run: |
-          curl -L -o ossutil64 https://gosspublic.alicdn.com/ossutil/1.7.20/ossutil64
-          chmod +x ossutil64
+          set -e
+
+          # 安装 unzip
+          sudo apt-get update -y
+          sudo apt-get install -y unzip
+
+          # 下载 OSSUTIL v2
+          curl -L -o ossutil.zip \
+            https://gosspublic.alicdn.com/ossutil/v2/2.2.0/ossutil-2.2.0-linux-amd64.zip
+
+          # 解压并安装
+          unzip -q ossutil.zip
+          sudo mv ossutil-*/ossutil /usr/local/bin/ossutil
+          sudo chmod +x /usr/local/bin/ossutil
+
+          # 打印版本信息验证安装成功
+          ossutil --version
 
       - name: Configure OSSUTIL
         run: |
-          ./ossutil64 config \
+          ./ossutil config \
+            --region ${{ secrets.OSS_ENDPOINT }} \
             -e ${{ secrets.OSS_ENDPOINT }} \
             -i ${{ secrets.OSS_ACCESS_KEY_ID }} \
             -k ${{ secrets.OSS_ACCESS_KEY_SECRET }}
 
       - name: Clean old files
         run: |
-          ./ossutil64 rm oss://${{ secrets.OSS_BUCKET }}/ --recursive -f
+          ./ossutil rm oss://${{ secrets.OSS_BUCKET }}/ --recursive -f
 
       - name: Upload new files
         run: |
-          ./ossutil64 cp dist/ oss://${{ secrets.OSS_BUCKET }}/ -r -f
+          ./ossutil cp dist/ oss://${{ secrets.OSS_BUCKET }}/ -r -f
