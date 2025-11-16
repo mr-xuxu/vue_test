@@ -45,7 +45,7 @@ jobs:
       - name: Configure OSSUTIL
         run: |
           ./ossutil config \
-            --region ${{ secrets.OSS_ENDPOINT }} \
+            --region ${{ secrets.OSS_REGION }} \
             -e ${{ secrets.OSS_ENDPOINT }} \
             -i ${{ secrets.OSS_ACCESS_KEY_ID }} \
             -k ${{ secrets.OSS_ACCESS_KEY_SECRET }}
