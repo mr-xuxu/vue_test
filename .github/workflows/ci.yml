@@ -40,7 +40,7 @@ jobs:
           sudo chmod +x /usr/local/bin/ossutil
 
           # 打印版本信息验证安装成功
-          ossutil help
+          ossutil
 
       - name: Configure OSSUTIL
         run: |
