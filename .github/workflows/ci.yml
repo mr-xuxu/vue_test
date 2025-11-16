@@ -69,10 +69,9 @@ jobs:
           OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
         run: |
           echo "🧹 清理旧的构建资源..."
-          # 删除旧的 JS/CSS 文件（保留当前构建）
-          aliyun oss rm oss://$OSS_BUCKET/assets/ --recursive -f || true
+          aliyun oss rm oss://$OSS_BUCKET/ --recursive -f || true
 
-          echo "🚀 上传新版本..."
-          aliyun oss cp ./dist/ oss://$OSS_BUCKET/ -r
+          echo "🚀 上传新版本（强制覆盖）..."
+          aliyun oss cp ./dist/ oss://$OSS_BUCKET/ -r --update
 
           echo "✅ 部署完成！"
