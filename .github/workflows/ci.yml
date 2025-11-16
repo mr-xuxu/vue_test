@@ -1,77 +1,43 @@
 name: test_vue_build
-on: [push]
+
+on:
+  push:
+    branches: [main]
+
 jobs:
-  deploy:
+  build-deploy:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-node@v6
+
+      - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 22
+          cache: 'npm'
+
       - name: Install dependencies
         run: npm ci
-      - name: Run build
+
+      - name: Build
         run: npm run build
-      - name: Debug info
+
+      - name: Install OSSUTIL (faster & recommended)
         run: |
-          echo "当前目录: $(pwd)"
-          echo "Node版本: $(node --version)"
-          echo "NPM版本: $(npm --version)"
-          ls -la
-          ls -la dist/
-      - name: Health check
+          curl -o ossutil64 https://gosspublic.alicdn.com/ossutil/1.7.20/ossutil64
+          chmod +x ossutil64
+
+      - name: Configure OSSUTIL
         run: |
-          echo "✅ 构建质量检查:"
-          echo "- HTML文件大小: $(stat -c%s dist/index.html) 字节"
-          echo "- Assets文件数: $(find dist/assets -type f | wc -l) 个"
-          echo "- 总构建文件数: $(find dist -type f | wc -l) 个"
+          ./ossutil64 config \
+            -e ${{ secrets.OSS_ENDPOINT }} \
+            -i ${{ secrets.OSS_ACCESS_KEY_ID }} \
+            -k ${{ secrets.OSS_ACCESS_KEY_SECRET }}
 
-          if grep -q "DOCTYPE html" dist/index.html; then
-            echo "✅ HTML结构正确"
-          else
-            echo "❌ HTML可能有问题"
-          fi
-      - name: Setup Aliyun CLI
+      - name: Clean old files
         run: |
-          # 安装
-          /bin/bash -c "$(curl -fsSL https://aliyuncli.alicdn.com/install.sh)"
+          ./ossutil64 rm oss://${{ secrets.OSS_BUCKET }}/ --recursive -f
 
-          # 验证
-          aliyun version
-          # 配置
-          aliyun configure set \
-            --profile default \
-            --mode AK \
-            --access-key-id "${{ secrets.OSS_ACCESS_KEY_ID }}" \
-            --access-key-secret "${{ secrets.OSS_ACCESS_KEY_SECRET }}" \
-            --region "${{ secrets.OSS_REGION }}"
-      - name: Test OSS permissions
-        env:
-          OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
+      - name: Upload new files
         run: |
-          set -e
-          echo "1. 测试文件列表..."
-          aliyun oss ls oss://$OSS_BUCKET/
-
-          echo "2. 测试上传文件..."
-          echo "GitHub Actions Test" > test-actions.txt
-          aliyun oss cp test-actions.txt oss://$OSS_BUCKET/test-actions.txt
-
-          echo "3. 测试读取文件..."
-          aliyun oss cat oss://$OSS_BUCKET/test-actions.txt
-
-          echo "4. 测试删除文件..."
-          aliyun oss rm oss://$OSS_BUCKET/test-actions.txt
-
-          echo "✅ 所有权限测试通过！"
-      - name: Deploy with cleanup
-        env:
-          OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
-        run: |
-          echo "🧹 清理旧的构建资源..."
-          aliyun oss rm oss://$OSS_BUCKET/ --recursive -f || true
-
-          echo "🚀 上传新版本（强制覆盖）..."
-          aliyun oss cp ./dist/ oss://$OSS_BUCKET/ -r --update
-
-          echo "✅ 部署完成！"
+          ./ossutil64 cp dist/ oss://${{ secrets.OSS_BUCKET }}/ -r -f

@@ -1,8 +1,9 @@
-<script setup></script>
+<script setup lang="ts"></script>
 
 <template>
-  <h1>这是测试</h1>
-  <h1>这是第二次测试</h1>
+  <h1 class="text-3xl font-bold underline">
+    Hello world!
+  </h1>
 </template>
 
 <style scoped></style>
