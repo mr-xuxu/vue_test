@@ -19,3 +19,23 @@ jobs:
           echo "NPM版本: $(npm --version)"
           ls -la
           ls -la dist/
+      - name: Health check
+        run: |
+          echo "✅ 构建质量检查:"
+          echo "- HTML文件大小: $(stat -c%s dist/index.html) 字节"
+          echo "- Assets文件数: $(find dist/assets -type f | wc -l) 个"
+          echo "- 总构建文件数: $(find dist -type f | wc -l) 个"
+
+          # 检查HTML是否包含必要的标签
+          if grep -q "DOCTYPE html" dist/index.html; then
+            echo "✅ HTML结构正确"
+          else
+            echo "❌ HTML可能有问题"
+          fi
+      - name: Setup Aliyun CLI
+        run: |
+          # 安装
+          /bin/bash -c "$(curl -fsSL https://aliyuncli.alicdn.com/install.sh)"
+
+          # 验证
+          aliyun version
