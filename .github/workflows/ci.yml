@@ -44,7 +44,7 @@ jobs:
 
       - name: Configure OSSUTIL
         run: |
-          ./ossutil config \
+          ossutil config \
             --region ${{ secrets.OSS_REGION }} \
             -e ${{ secrets.OSS_ENDPOINT }} \
             -i ${{ secrets.OSS_ACCESS_KEY_ID }} \
@@ -52,8 +52,8 @@ jobs:
 
       - name: Clean old files
         run: |
-          ./ossutil rm oss://${{ secrets.OSS_BUCKET }}/ --recursive -f
+          ossutil rm oss://${{ secrets.OSS_BUCKET }}/ --recursive -f
 
       - name: Upload new files
         run: |
-          ./ossutil cp dist/ oss://${{ secrets.OSS_BUCKET }}/ -r -f
+          ossutil cp dist/ oss://${{ secrets.OSS_BUCKET }}/ -r -f
