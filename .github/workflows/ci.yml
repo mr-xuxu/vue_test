@@ -64,3 +64,13 @@ jobs:
           aliyun oss rm oss://$OSS_BUCKET/test-actions.txt
 
           echo "✅ 所有权限测试通过！"
+      - name: Deploy with cleanup
+        run: |
+          echo "🧹 清理旧的构建资源..."
+          # 删除旧的 JS/CSS 文件（保留当前构建）
+          aliyun oss rm oss://$OSS_BUCKET/assets/ --recursive -f || true
+
+          echo "🚀 上传新版本..."
+          aliyun oss cp ./dist/ oss://$OSS_BUCKET/ -r
+
+          echo "✅ 部署完成！"
