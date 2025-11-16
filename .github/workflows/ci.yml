@@ -41,7 +41,7 @@ jobs:
           rm -rf ossutil.zip ossutil-*
 
           # 验证安装
-          ossutil --version
+          ossutil
 
       - name: Configure OSSUTIL
         run: |
