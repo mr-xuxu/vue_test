@@ -6,6 +6,9 @@
              text-transparent bg-clip-text drop-shadow-md">
     Hello World!
   </h1>
+  <p class="text-center mt-6 text-lg text-gray-600">
+    Welcome to your Vue 3 + TypeScript + Vite application.
+  </p>
 </template>
 
 <style scoped></style>
